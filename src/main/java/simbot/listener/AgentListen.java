@@ -14,7 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import simbot.arknights.bean.AgentText;
+import simbot.arknights.service.AgentService;
 import simbot.listener.MyGroupListen;
+import util.GraphicsUtil;
 import util.UuidUtils;
 
 import javax.imageio.ImageIO;
@@ -38,23 +41,35 @@ public class AgentListen {
     private static final Integer HEIGHT = 210;
     private static final Integer LINE_HEIGHT = 45;
 
+    @Autowired
+    AgentService agentService;
+
     /**
      * 注入得到一个消息构建器工厂。
      */
     @Depend
     @Autowired
-    private MessageContentBuilderFactory messageBuilderFactory;
+    MessageContentBuilderFactory messageBuilderFactory;
 
     @OnGroup
-    @Filter(groups = {"785296788"},value = "干员查询", matchType = MatchType.STARTS_WITH)
+    @Filter(groups = {"785296788","614728070"},value = "干员原始文本查询", matchType = MatchType.STARTS_WITH)
     public void onGroupAgentMsg(GroupMsg groupMsg, Sender sender) {
         try{
             String msgText = groupMsg.getText();
 
-            String msgAgent = msgText.replace("干员查询","").trim();
+            String msgAgent = msgText.replace("干员原始文本查询","").trim();
 
             BufferedImage thumbImage = new BufferedImage(D_WIDTH, D_HEIGHT, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = thumbImage.createGraphics();
+            //干员原始数据
+            AgentText agentText = agentService.getAgentTextByName(msgAgent);
+            if(agentText == null){
+                sender.sendGroupMsg(groupMsg.getGroupInfo(),"未查询到干员信息");
+                return;
+            }
+            String agentTextStr = agentText.getAgentText();
+            agentTextStr = agentTextStr.split("==干员信息==")[1].split("==获得方式==")[0];
+
 
             //底图
             File file = new File(IN);
@@ -69,7 +84,9 @@ public class AgentListen {
             //设置白色黑体
             g.setColor(Color.WHITE);
             g.setFont(new Font("微软雅黑",Font.BOLD,SIZE));
-            g.drawString(msgAgent,TIME,HEIGHT+LINE_HEIGHT);
+
+            GraphicsUtil.writeFont(new Font("微软雅黑",Font.BOLD,SIZE),agentTextStr,800,30,g,40,60,Color.WHITE);
+            //g.drawString(agentTextStr,40,60);
             g.dispose();
 
             //生成uuid作为名字，防止图片相互覆盖
