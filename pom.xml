@@ -94,12 +94,115 @@
     </dependencies>
 
     <build>
+        <finalName>simbot-chouxixi</finalName>
         <plugins>
-            <!-- Springboot打包插件。使用 mvn package 进行打包。 -->
+            <!-- 这个插件是用来打jar包的 -->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <!-- 将静态资源排除出jar包 -->
+                    <excludes>
+                        <exclude>simbot-bots/**</exclude>
+                        <!--<exclude>static/**</exclude>-->
+                        <exclude>*.*</exclude>
+                    </excludes>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <!-- MANIFEST.MF 中 Class-Path 加入前缀 -->
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <!-- jar包不包含唯一版本标识 -->
+                            <useUniqueVersions>false</useUniqueVersions>
+                            <!-- 指定启动类的包路径 -->
+                            <mainClass>simbot.SimbotExampleApplication</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <!--MANIFEST.MF 中 Class-Path 加入资源文件目录 -->
+                            <Class-Path>resources/ </Class-Path>
+                            <!--<Class-Path>resources/ </Class-Path>-->
+                        </manifestEntries>
+                    </archive>
+                    <!-- 指定打出的jar包路径 -->
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
             </plugin>
+            <!-- 这个插件是用来复制项目依赖的jar包 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <!-- 自定义 -->
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <!-- 复制依赖的jar包 -->
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 将依赖的jar包复制到该路径下 -->
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 这个插件是用来复制项目的静态资源-->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <!-- 自定义 -->
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <!-- 复制静态资源 -->
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <!-- 指定静态资源的路径 -->
+                                    <directory>src/main/resources</directory>
+                                    <!-- 指定需要复制的文件 -->
+                                    <includes>
+                                        <include>*.*</include>
+                                        <include>simbot-bots/**</include>
+                                        <include>static/**</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <!-- 指定复制到该目录下 -->
+                            <outputDirectory>${project.build.directory}/resources</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 这个插件使用来将分离出来的静态资源和依赖的jar包(就是上面说到的文件目录)，
+        压缩成一个zip文件。个人感觉这个蛮方便的 -->
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    &lt;!&ndash; 这个插件需要指定一个配置文件 &ndash;&gt;
+                    <descriptors>
+                        <descriptor>src/main/resources/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        &lt;!&ndash; 自定义 &ndash;&gt;
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            &lt;!&ndash; 只执行一次 &ndash;&gt;
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
         </plugins>
     </build>
 

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import simbot.arknights.bean.AgentText;
 import simbot.arknights.dao.AgentTextDao;
 
+import java.util.List;
+
 @Service
 public class AgentService {
 
@@ -14,6 +16,11 @@ public class AgentService {
 
     public AgentText getAgentTextByName(String name){
         return agentTextDao.selectOne(new QueryWrapper<AgentText>().lambda().like(AgentText::getAgentName,name).last("limit 1"));
+    }
+
+
+    public List<AgentText> getAllAgentText(){
+        return agentTextDao.selectList(new QueryWrapper<AgentText>());
     }
 
 }

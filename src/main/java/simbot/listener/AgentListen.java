@@ -32,8 +32,8 @@ public class AgentListen {
     /** log */
     private static final Logger LOG = LoggerFactory.getLogger(MyGroupListen.class);
 
-    private static final String IN = "src/static/images/background_2.png";
-    private static final String OUT = "src/static/temp/";
+    private static final String IN = "src/main/resources/static/images/background_2.png";
+    private static final String OUT = "src/main/resources/static/temp/";
     private static final Integer D_WIDTH = 1024;
     private static final Integer D_HEIGHT = 576;
     private static final Integer SIZE = 26;

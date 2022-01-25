@@ -3,6 +3,7 @@ package simbot;
 import love.forte.simbot.spring.autoconfigure.EnableSimbot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 启动类。
@@ -12,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author ForteScarlet
  */
 @EnableSimbot
+@EnableScheduling // 开启定时任务功
 @SpringBootApplication
 public class SimbotExampleApplication {
     public static void main(String[] args) {
